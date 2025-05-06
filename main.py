@@ -16,6 +16,10 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window.center()
     page.padding = ft.padding.only(top=20, left=20, right=20, bottom=20)
+    #capturar tamanho da tela
+    WIDTH : int = page.width
+    HEIGHT : int = page.height
+    #print(f"DEBUG: Tamanho da tela: {WIDTH}x{HEIGHT}")
 
     def add_task(e):
         # print(new_task.value)
@@ -38,7 +42,7 @@ def main(page: ft.Page):
         on_click=add_task,
     )
 
-    task_list = ft.Column()
+    task_list = ft.Column(height=HEIGHT - 170, scroll=ft.ScrollMode.ADAPTIVE, auto_scroll=True)
 
     card = ft.Column(
         width=400,
