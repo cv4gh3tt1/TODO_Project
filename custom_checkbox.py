@@ -5,16 +5,16 @@ class Checkbox(ft.Row):  # class
     def __init__(self, text):
         super().__init__()
         self.text_view = ft.Text(text)
-        self.text_edit = ft.TextField(text, visible=False, on_submit=self.save)
-        self.edit_button = ft.IconButton(icon=ft.icons.EDIT, on_click=self.edit)
+        self.text_edit = ft.TextField(text, visible=False, on_submit=self.save) # type: ignore
+        self.edit_button = ft.IconButton(icon=ft.Icons.EDIT, on_click=self.edit)
         self.save_button = ft.IconButton(
-            icon=ft.icons.SAVE,
+            icon=ft.Icons.SAVE,
             on_click=self.save,
             visible=False,
             icon_color=ft.colors.GREEN_400,
         )
         self.delete_button = ft.IconButton(
-            icon=ft.icons.DELETE, on_click=self.delete, icon_color=ft.colors.RED_400
+            icon=ft.Icons.DELETE, on_click=self.delete, icon_color=ft.colors.RED_400
         )
         self.controls = [
             ft.Checkbox(),
@@ -33,7 +33,7 @@ class Checkbox(ft.Row):  # class
         self.text_edit.visible = True
         self.update()
 
-    def save(self, e):
+    def save(self, e):  # metodo de salvar
         self.save_button.visible = False
         self.text_edit.visible = False
         self.edit_button.visible = True
