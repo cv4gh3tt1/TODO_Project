@@ -22,7 +22,9 @@ def main(page: ft.Page):
         page.update()
         new_task.focus()
 
-    new_task = ft.TextField(hint_text="Insira uma tarefa...", expand=True, autofocus=True)
+    new_task = ft.TextField(
+        hint_text="Insira uma tarefa...", expand=True, autofocus=True
+    )
     new_button = ft.FloatingActionButton(
         icon=ft.icons.ADD,
         on_click=add_task,
@@ -31,8 +33,11 @@ def main(page: ft.Page):
     task_list = ft.Column()
 
     card = ft.Column(
-        width=400, controls=[
-            ft.Row(controls=[new_task, new_button]), task_list,]
+        width=400,
+        controls=[
+            ft.Row(controls=[new_task, new_button]),
+            task_list,
+        ],
     )
 
     page.add(card)

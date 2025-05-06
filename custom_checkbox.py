@@ -1,15 +1,21 @@
 import flet as ft
 
-class Checkbox(ft.Row): # class
+
+class Checkbox(ft.Row):  # class
     def __init__(self, text):
         super().__init__()
         self.text_view = ft.Text(text)
         self.text_edit = ft.TextField(text, visible=False)
         self.edit_button = ft.IconButton(icon=ft.icons.EDIT, on_click=self.edit)
         self.save_button = ft.IconButton(
-            icon=ft.icons.SAVE, on_click=self.save, visible=False
+            icon=ft.icons.SAVE,
+            on_click=self.save,
+            visible=False,
+            icon_color=ft.colors.GREEN_400,
         )
-        self.delete_button = ft.IconButton(icon=ft.icons.DELETE, on_click=self.delete)
+        self.delete_button = ft.IconButton(
+            icon=ft.icons.DELETE, on_click=self.delete, icon_color=ft.colors.RED_400
+        )
         self.controls = [
             ft.Checkbox(),
             self.text_view,
@@ -27,7 +33,6 @@ class Checkbox(ft.Row): # class
         self.text_edit.visible = True
         self.update()
 
-
     def save(self, e):
         self.save_button.visible = False
         self.text_edit.visible = False
@@ -35,7 +40,7 @@ class Checkbox(ft.Row): # class
         self.delete_button.visible = True
         self.text_view.visible = True
         self.text_view.value = self.text_edit.value
-        #self.text_view.update()
+        # self.text_view.update()
         self.update()
 
     def delete(self, e):
