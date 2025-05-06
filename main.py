@@ -3,6 +3,8 @@ from custom_checkbox import Checkbox
 
 
 def main(page: ft.Page):
+    # print("DEBUG: Função main iniciada.") # Removendo prints de debug
+
     page.title = "Lista de Tarefas"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.window.height = 600
@@ -32,7 +34,7 @@ def main(page: ft.Page):
         on_submit=add_task,
     )
     new_button = ft.FloatingActionButton(
-        icon=ft.icons.ADD,
+        icon=ft.Icons.ADD,
         on_click=add_task,
     )
 
@@ -46,7 +48,6 @@ def main(page: ft.Page):
         ],
     )
 
-    page.add(card)
-
+    page.add(card) # Adicionando o card à página
 
 ft.app(target=main)
