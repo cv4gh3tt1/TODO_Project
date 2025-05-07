@@ -1,5 +1,6 @@
 import flet as ft
 
+
 # Classe para criar as tarefas
 class Task(ft.Column):
     pass
@@ -13,13 +14,27 @@ class TodoApp(ft.Column):
             expand=True,
             on_submit=self.add_task,
         )
-    
-    def add_task(self, e): # Adiciona uma nova tarefa
+
+        self.filter = ft.Tabs(
+            scrollable=False,
+            selected_index=0,
+            on_change=self.tabs_changed,
+            tabs=[
+                ft.Tab(text="Todas"),
+                ft.Tab(text="Ativas"),
+                ft.Tab(text="Concluídas"),
+            ],
+        )
+
+    def tabs_changed(self, e):
+        pass
+
+    def add_task(self, e):  # Adiciona uma nova tarefa
         pass
 
 
 # Função principal que inicializa a página
-def main(page: ft.Page): 
+def main(page: ft.Page):
     page.title = "Minhas Tarefas"
     page.window.width = 600
     page.window.height = 650
@@ -27,10 +42,11 @@ def main(page: ft.Page):
     page.padding = ft.padding.only(left=20, right=20, top=20, bottom=20)
     page.theme_mode = ft.ThemeMode.LIGHT
 
-    
     page.update()
 
-    app = TodoApp() # Cria uma instância do aplicativo de tarefas
-    page.add(app) # Adiciona o aplicativo à página
-    
+    app = TodoApp()  # Cria uma instância do aplicativo de tarefas
+
+    page.add(app)  # Adiciona o aplicativo à página
+
+
 ft.app(target=main)
