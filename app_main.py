@@ -33,11 +33,11 @@ class TodoApp(ft.Column):
         self.items_left = ft.Text("0 tarefas restantes")
 
         return [
+            # Titulo do App
             ft.Row(
                 [
                     ft.Text(
                         value="Tarefas",
-                        theme_style="headlineMedium",
                         size=30,
                         color=ft.colors.with_opacity(0.7, "black"),
                     )
@@ -54,21 +54,34 @@ class TodoApp(ft.Column):
             # Lista de Tarefas
             ft.Column(
                 controls=[
-                    self.filter,
-                    ft.Column(),  # Placeholder para self.tasks
+                    self.filter,  # Filtro de tarefas
+                    # self.tasks,  # Placeholder para as tarefas
                     ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
                             self.items_left,
-                        ]
+                            ft.OutlinedButton(
+                                text="Apagar tarefas concluidas".upper(),
+                                on_click=self.clear_completed_tasks,
+                                icon=ft.icons.DELETE,
+                                icon_color=ft.colors.RED_400,
+                            ),
+                        ],
                     ),
                 ]
             ),
         ]
 
     def tabs_changed(self, e):
-        pass
+        self.update()
+        # Atualiza a exibição com base na aba selecionada
 
     def add_task(self, e):  # Adiciona uma nova tarefa
+        pass
+
+    def clear_completed_tasks(self, e):
+        # Limpa as tarefas concluídas
         pass
 
 
