@@ -8,6 +8,10 @@ class Task(ft.Column):
 
 # Classe para Criar o Aplicativo de tarefas
 class TodoApp(ft.Column):
+    def __init__(self):
+        super().__init__()
+        self.controls = self.build()  # Chama o método build e adiciona os controles
+
     def build(self):
         self.new_task = ft.TextField(
             hint_text="Digite uma nova tarefa",
@@ -25,6 +29,41 @@ class TodoApp(ft.Column):
                 ft.Tab(text="Concluídas"),
             ],
         )
+
+        self.items_left = ft.Text("0 tarefas restantes")
+
+        return [
+            ft.Row(
+                [
+                    ft.Text(
+                        value="Tarefas",
+                        theme_style="headlineMedium",
+                        size=30,
+                        color=ft.colors.with_opacity(0.7, "black"),
+                    )
+                ],
+                alignment="center",
+            ),
+            # Insercao das tarefas
+            ft.Row(
+                controls=[
+                    self.new_task,
+                    ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_task),
+                ],
+            ),
+            # Lista de Tarefas
+            ft.Column(
+                controls=[
+                    self.filter,
+                    ft.Column(),  # Placeholder para self.tasks
+                    ft.Row(
+                        controls=[
+                            self.items_left,
+                        ]
+                    ),
+                ]
+            ),
+        ]
 
     def tabs_changed(self, e):
         pass
