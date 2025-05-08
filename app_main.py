@@ -2,9 +2,30 @@ import flet as ft
 
 
 # Classe para criar as tarefas
-class Task(ft.Column):
-    pass
+class Task(ft.Column): # Herda de ft.Column para criar uma coluna de tarefas
+    def __init__ (self, task_name, task_status_change, task_delete): # Inicializa a classe com os parâmetros necessários
+        super().__init__()
+        self.task_completed = False  # Inicializa o status da tarefa como não concluída
+        self.task_name = task_name  # Nome da tarefa oriunda do textfield
+        self.task_status_change = task_status_change  # Função para alterar o status da tarefa
+        self.task_delete = task_delete  # Função para deletar a tarefa
 
+        def build(self):  # Método para construir a tarefa
+            self.display_task = ft.Checkbox( #
+                value=False, # Inicializa o checkbox como não selecionado
+                label=self.task_name, # Nome da tarefa
+                on_change=self.task_status_change, # Função para alterar o status da tarefa
+            )
+
+            self.edit_name = ft.TextField(expand=True, on_submit=self.clicked) # Campo de texto para editar o nome da tarefa
+
+            self.display_view (ft.Row( # Cria uma linha para exibir a tarefa
+                controls=[
+
+                ]),)
+
+    def save_cliced(self, e): # # Método para salvar a tarefa clicada
+        pass
 
 # Classe para Criar o Aplicativo de tarefas
 class TodoApp(ft.Column):
