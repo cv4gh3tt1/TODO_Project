@@ -15,7 +15,7 @@ class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
         self.task_delete = task_delete  # Função para deletar a tarefa
 
         def build(self):  # Método para construir a tarefa
-            self.display_task = ft.Checkbox(  #
+            self.display_task = ft.Checkbox(  # Cria um checkbox para marcar a tarefa como concluída
                 value=False,  # Inicializa o checkbox como não selecionado
                 label=self.task_name,  # Nome da tarefa
                 on_change=self.task_status_change,  # Função para alterar o status da tarefa
@@ -25,7 +25,7 @@ class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
                 expand=True, on_submit=self.clicked
             )  # Campo de texto para editar o nome da tarefa
 
-            self.display_view(
+            self.display_view = (
                 ft.Row(  # Cria uma linha para exibir a tarefa
                     controls=[
                         self.display_task,  # Checkbox para marcar a tarefa como concluída
@@ -38,7 +38,7 @@ class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
                                     on_click=self.edit_clicked,  # Função chamada ao clicar no ícone de editar
                                 ),
                                 ft.IconButton(
-                                    icon=ft.Icons.DELETE_OUTLINED,  # Ícone para deletar a tarefa
+                                    icon=ft.Icons.DELETE_OUTLINE,  # Ícone para deletar a tarefa
                                     icon_color=ft.Colors.RED,  # Cor do ícone
                                     tooltip="Deletar tarefa",  # Dica de ferramenta ao passar o mouse
                                     on_click=self.delete_clicked,  # Função chamada ao clicar no ícone de deletar
@@ -49,7 +49,32 @@ class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
                 ),
             )
 
-    def save_cliced(self, e):  # # Método para salvar a tarefa clicada
+        # Cria uma linha para exibir a tarefa
+        self.edit_view = ft.Row(
+            visible=False,
+            Controls=[
+                self.edit_name,
+                ft.IconButton(
+                    icon=ft.Icons.DONE_OUTLINE_OUTLINED,  # Ícone para salvar a tarefa
+                    icon_color=ft.Colors.GREEN,  # Cor do ícone
+                    tooltip="Atualizar tarefa",  # Dica de ferramenta ao passar o mouse
+                    on_click=self.save_clicked,  # Função chamada ao clicar no ícone de salvar
+                ),
+            ],
+        )
+
+        # retorna a coluna com os controles de exibição e edição da tarefa
+        return ft.Column(
+            controls=[self.display_view, self.edit_view]
+        )  
+
+    def save_clicked(self, e):  # # Método para salvar a tarefa clicada
+        pass
+
+    def edit_clicked(self, e):  # # Método para editar a tarefa clicada
+        pass
+
+    def delete_clicked(self, e):  # # Método para deletar a tarefa clicada
         pass
 
 
