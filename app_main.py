@@ -64,18 +64,31 @@ class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
         )
 
         # retorna a coluna com os controles de exibição e edição da tarefa
-        return ft.Column(
-            controls=[self.display_view, self.edit_view]
-        )  
+        return ft.Column(controls=[self.display_view, self.edit_view])
 
     def save_clicked(self, e):  # # Método para salvar a tarefa clicada
-        pass
+        self.display_task.label = self.edit_name.value  # Atualiza o nome da tarefa
+        self.display_view.visible = True  # Torna a exibição da tarefa visível
+        self.edit_view.visible = False  # Torna a edição da tarefa invisível
+        self.update()  # Atualiza a exibição da tarefa
 
     def edit_clicked(self, e):  # # Método para editar a tarefa clicada
-        pass
+        self.edit_name.value = (
+            self.display_task.label
+        )  # Atualiza o campo de edição com o nome da tarefa
+        self.edit_view.visible = True  # Torna a edição da tarefa visível
+        self.edit_name.focus()  # Foca no campo de edição
+        self.display_view.visible = False  # Torna a exibição da tarefa invisível
+        self.update()  # Atualiza a exibição da tarefa
 
-    def delete_clicked(self, e):  # # Método para deletar a tarefa clicada
-        pass
+    def delete_clicked(self, e):  # Método para deletar a tarefa clicada
+        self.task_delete(self)  # Chama a função de deletar a tarefa
+        self.update()  # Atualiza a exibição da tarefa
+
+    def satus_change(self, e):  # Método para alterar o status da tarefa
+        self.task_completed = self.display_task.value  # Atualiza o status da tarefa
+        self.task_status_change(self)  # Chama a função para alterar o status da tarefa
+        self.update()  # Atualiza a exibição da tarefa
 
 
 # Classe para Criar o Aplicativo de tarefas
