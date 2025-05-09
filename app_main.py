@@ -2,175 +2,212 @@ import flet as ft
 
 
 # Classe para criar as tarefas
-class Task(ft.Column):  # Herda de ft.Column para criar uma coluna de tarefas
-    def __init__(
-        self, task_name, task_status_change, task_delete
-    ):  # Inicializa a classe com os parâmetros necessários
+class Task(ft.Column):
+    def __init__(self, task_name_str, on_status_change_callback, on_delete_callback):
         super().__init__()
-        self.task_completed = False  # Inicializa o status da tarefa como não concluída
-        self.task_name = task_name  # Nome da tarefa oriunda do textfield
-        self.task_status_change = (
-            task_status_change  # Função para alterar o status da tarefa
+        self.task_name_initial = task_name_str
+        self.on_status_change_callback = on_status_change_callback
+        self.on_delete_callback = on_delete_callback
+        self.task_completed = False
+
+        self._build_controls()
+
+    def _build_controls(self):
+        self.display_task_checkbox = ft.Checkbox(
+            value=self.task_completed,
+            label=self.task_name_initial,
+            on_change=self._handle_status_change,
         )
-        self.task_delete = task_delete  # Função para deletar a tarefa
 
-        def build(self):  # Método para construir a tarefa
-            self.display_task = ft.Checkbox(  # Cria um checkbox para marcar a tarefa como concluída
-                value=False,  # Inicializa o checkbox como não selecionado
-                label=self.task_name,  # Nome da tarefa
-                on_change=self.task_status_change,  # Função para alterar o status da tarefa
-            )
+        self.edit_name_textfield = ft.TextField(
+            expand=True, on_submit=self.save_clicked
+        )
 
-            self.edit_name = ft.TextField(
-                expand=True, on_submit=self.clicked
-            )  # Campo de texto para editar o nome da tarefa
-
-            self.display_view = (
-                ft.Row(  # Cria uma linha para exibir a tarefa
+        self.display_view_row = ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                self.display_task_checkbox,
+                ft.Row(
+                    spacing=0, # Ajuste para os botões ficarem mais próximos
                     controls=[
-                        self.display_task,  # Checkbox para marcar a tarefa como concluída
-                        ft.Row(
-                            controls=[
-                                ft.IconButton(
-                                    icon=ft.Icons.CREATE_OUTLINED,  # Ícone para editar a tarefa
-                                    icon_color=ft.Colors.GREEN,  # Cor do ícone
-                                    tooltip="Editar tarefa",  # Dica de ferramenta ao passar o mouse
-                                    on_click=self.edit_clicked,  # Função chamada ao clicar no ícone de editar
-                                ),
-                                ft.IconButton(
-                                    icon=ft.Icons.DELETE_OUTLINE,  # Ícone para deletar a tarefa
-                                    icon_color=ft.Colors.RED,  # Cor do ícone
-                                    tooltip="Deletar tarefa",  # Dica de ferramenta ao passar o mouse
-                                    on_click=self.delete_clicked,  # Função chamada ao clicar no ícone de deletar
-                                ),
-                            ]
+                        ft.IconButton(
+                            icon=ft.Icons.CREATE_OUTLINED,
+                            icon_color=ft.Colors.GREEN,
+                            tooltip="Editar tarefa",
+                            on_click=self.edit_clicked,
+                        ),
+                        ft.IconButton(
+                            icon=ft.Icons.DELETE_OUTLINE,
+                            icon_color=ft.Colors.RED,
+                            tooltip="Deletar tarefa",
+                            on_click=self._handle_delete,
                         ),
                     ]
-                ),
-            )
-
-        # Cria uma linha para exibir a tarefa
-        self.edit_view = ft.Row(
-            visible=False,
-            Controls=[
-                self.edit_name,
-                ft.IconButton(
-                    icon=ft.Icons.DONE_OUTLINE_OUTLINED,  # Ícone para salvar a tarefa
-                    icon_color=ft.Colors.GREEN,  # Cor do ícone
-                    tooltip="Atualizar tarefa",  # Dica de ferramenta ao passar o mouse
-                    on_click=self.save_clicked,  # Função chamada ao clicar no ícone de salvar
                 ),
             ],
         )
 
-        # retorna a coluna com os controles de exibição e edição da tarefa
-        return ft.Column(controls=[self.display_view, self.edit_view])
+        self.edit_view_row = ft.Row(
+            visible=False,
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[ # Corrigido: Controls -> controls
+                self.edit_name_textfield,
+                ft.IconButton(
+                    icon=ft.Icons.DONE_OUTLINE_OUTLINED,
+                    icon_color=ft.Colors.GREEN,
+                    tooltip="Atualizar tarefa",
+                    on_click=self.save_clicked,
+                ),
+            ],
+        )
+        self.controls = [self.display_view_row, self.edit_view_row]
 
-    def save_clicked(self, e):  # # Método para salvar a tarefa clicada
-        self.display_task.label = self.edit_name.value  # Atualiza o nome da tarefa
-        self.display_view.visible = True  # Torna a exibição da tarefa visível
-        self.edit_view.visible = False  # Torna a edição da tarefa invisível
-        self.update()  # Atualiza a exibição da tarefa
+    def edit_clicked(self, e):
+        self.edit_name_textfield.value = self.display_task_checkbox.label
+        self.display_view_row.visible = False
+        self.edit_view_row.visible = True
+        self.edit_name_textfield.focus()
+        self.update()
 
-    def edit_clicked(self, e):  # # Método para editar a tarefa clicada
-        self.edit_name.value = (
-            self.display_task.label
-        )  # Atualiza o campo de edição com o nome da tarefa
-        self.edit_view.visible = True  # Torna a edição da tarefa visível
-        self.edit_name.focus()  # Foca no campo de edição
-        self.display_view.visible = False  # Torna a exibição da tarefa invisível
-        self.update()  # Atualiza a exibição da tarefa
+    def save_clicked(self, e):
+        if self.edit_name_textfield.value: # Evita salvar nome vazio
+            self.display_task_checkbox.label = self.edit_name_textfield.value
+        self.display_view_row.visible = True
+        self.edit_view_row.visible = False
+        self.update()
 
-    def delete_clicked(self, e):  # Método para deletar a tarefa clicada
-        self.task_delete(self)  # Chama a função de deletar a tarefa
-        self.update()  # Atualiza a exibição da tarefa
+    def _handle_status_change(self, e): # Corrigido: satus_change -> _handle_status_change
+        self.task_completed = self.display_task_checkbox.value
+        self.on_status_change_callback(self) # Chama o callback do TodoApp
+        # self.update() # O Checkbox se atualiza; se houver outras mudanças visuais na Task, descomente
 
-    def satus_change(self, e):  # Método para alterar o status da tarefa
-        self.task_completed = self.display_task.value  # Atualiza o status da tarefa
-        self.task_status_change(self)  # Chama a função para alterar o status da tarefa
-        self.update()  # Atualiza a exibição da tarefa
+    def _handle_delete(self, e): # Renomeado de delete_clicked para _handle_delete
+        self.on_delete_callback(self) # Chama o callback do TodoApp
+        # Não precisa de self.update() aqui, pois a Task será removida pelo TodoApp
 
 
 # Classe para Criar o Aplicativo de tarefas
 class TodoApp(ft.Column):
     def __init__(self):
         super().__init__()
-        self.controls = self.build()  # Chama o método build e adiciona os controles
+        self._build_ui()
+        self.update_items_left() # Atualiza a contagem inicial
 
-    def build(self):  # Método para construir o aplicativo de tarefas
-        self.new_task = ft.TextField(  # Campo de texto para inserir uma nova tarefa
+    def _build_ui(self):
+        self.new_task_textfield = ft.TextField(
             hint_text="Digite uma nova tarefa",
             expand=True,
-            on_submit=self.add_task,
+            on_submit=self.add_task_handler,
         )
 
-        self.filter = ft.Tabs(  # Filtro de tarefas
+        self.tasks_column = ft.Column( # Coluna dedicada para as tarefas
+            spacing=10,
+            # scroll=ft.ScrollMode.ADAPTIVE # Descomente se esperar muitas tarefas
+        )
+
+        self.filter_tabs = ft.Tabs(
             scrollable=False,
             selected_index=0,
-            on_change=self.tabs_changed,  # Função chamada ao mudar de aba
-            tabs=[  # Lista de abas para filtrar as tarefas
+            on_change=self.tabs_changed_handler,
+            tabs=[
                 ft.Tab(text="Todas"),
                 ft.Tab(text="Ativas"),
                 ft.Tab(text="Concluídas"),
             ],
         )
 
-        self.items_left = ft.Text(
-            "0 tarefas restantes"
-        )  # Texto para mostrar o número de tarefas restantes
+        self.items_left_text = ft.Text("0 tarefas restantes")
 
-        return [  # Lista de controles do aplicativo
-            # Cabeçalho do aplicativo
+        self.controls = [
             ft.Row(
                 [
                     ft.Text(
                         value="Tarefas",
                         size=30,
                         color=ft.Colors.with_opacity(0.7, "black"),
-                    )
+                    ),
                 ],
-                alignment="center",
+                alignment=ft.MainAxisAlignment.CENTER,
             ),
-            # Insercao das tarefas
             ft.Row(
                 controls=[
-                    self.new_task,
+                    self.new_task_textfield,
                     ft.FloatingActionButton(
-                        icon=ft.Icons.ADD, on_click=self.add_task
-                    ),  # Botão para adicionar nova tarefa
+                        icon=ft.Icons.ADD, on_click=self.add_task_handler
+                    ),
                 ],
             ),
-            # Lista de Tarefas
-            ft.Column(
+            self.filter_tabs,
+            self.tasks_column, # Adiciona a coluna de tarefas ao layout principal
+            ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    self.filter,  # Filtro de tarefas
-                    ft.Row(  # # Linha para exibir as tarefas
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            self.items_left,
-                            ft.OutlinedButton(
-                                text="Apagar tarefas concluidas".upper(),
-                                on_click=self.clear_completed_tasks,
-                                icon=ft.Icons.DELETE,
-                                icon_color=ft.Colors.RED_400,
-                            ),
-                        ],
+                    self.items_left_text,
+                    ft.OutlinedButton(
+                        text="Apagar tarefas concluidas".upper(),
+                        on_click=self.clear_completed_tasks_handler,
+                        icon=ft.Icons.DELETE,
+                        icon_color=ft.Colors.RED_400,
                     ),
-                ]
+                ],
             ),
         ]
 
-    def tabs_changed(self, e):
+    def tabs_changed_handler(self, e):
+        self.update_task_visibility()
         self.update()
-        # Atualiza a exibição com base na aba selecionada
 
-    def add_task(self, e):  # Adiciona uma nova tarefa
-        pass
+    def add_task_handler(self, e):
+        task_name = self.new_task_textfield.value.strip()
+        if task_name:
+            task = Task(
+                task_name, self.task_status_change_handler, self.task_delete_handler
+            )
+            self.tasks_column.controls.append(task)
+            self.new_task_textfield.value = ""
+            self.new_task_textfield.focus()
+            self.update_task_visibility() # Aplica o filtro atual à nova tarefa
+            self.update_items_left()
+            self.update()
 
-    def clear_completed_tasks(self, e):
-        # Limpa as tarefas concluídas
-        pass
+    def clear_completed_tasks_handler(self, e):
+        for task in self.tasks_column.controls[:]: # Itera sobre uma cópia da lista
+            if isinstance(task, Task) and task.task_completed:
+                self.task_delete_handler(task) # Reutiliza o handler de deleção
+        # update_items_left e update são chamados por task_delete_handler
+
+    def task_status_change_handler(self, task_instance: Task):
+        self.update_task_visibility()
+        self.update_items_left()
+        self.update()
+
+    def task_delete_handler(self, task_instance: Task):
+        self.tasks_column.controls.remove(task_instance)
+        self.update_task_visibility() # Reaplicar filtros pode ser útil
+        self.update_items_left()
+        self.update()
+
+    def update_items_left(self):
+        count = 0
+        for task in self.tasks_column.controls:
+            if isinstance(task, Task) and not task.task_completed:
+                count += 1
+        self.items_left_text.value = f"{count} tarefa(s) restante(s)"
+        # self.update() # O chamador fará o update principal
+
+    def update_task_visibility(self):
+        current_tab_index = self.filter_tabs.selected_index
+        for task in self.tasks_column.controls:
+            if isinstance(task, Task):
+                task.visible = (
+                    (current_tab_index == 0) or  # Todas
+                    (current_tab_index == 1 and not task.task_completed) or  # Ativas
+                    (current_tab_index == 2 and task.task_completed)  # Concluídas
+                )
+        # self.update() # O chamador fará o update principal
 
 
 # Função principal que inicializa a página
@@ -181,8 +218,6 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.padding = ft.padding.only(left=20, right=20, top=20, bottom=20)
     page.theme_mode = ft.ThemeMode.LIGHT
-
-    page.update()
 
     app = TodoApp()  # Cria uma instância do aplicativo de tarefas
 
