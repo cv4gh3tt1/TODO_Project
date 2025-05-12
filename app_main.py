@@ -29,7 +29,7 @@ class Task(ft.Column):
             controls=[
                 self.display_task_checkbox,
                 ft.Row(
-                    spacing=0, # Ajuste para os botões ficarem mais próximos
+                    spacing=0,  # Ajuste para os botões ficarem mais próximos
                     controls=[
                         ft.IconButton(
                             icon=ft.Icons.CREATE_OUTLINED,
@@ -43,7 +43,7 @@ class Task(ft.Column):
                             tooltip="Deletar tarefa",
                             on_click=self._handle_delete,
                         ),
-                    ]
+                    ],
                 ),
             ],
         )
@@ -52,7 +52,7 @@ class Task(ft.Column):
             visible=False,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[ # Corrigido: Controls -> controls
+            controls=[  # Corrigido: Controls -> controls
                 self.edit_name_textfield,
                 ft.IconButton(
                     icon=ft.Icons.DONE_OUTLINE_OUTLINED,
@@ -72,19 +72,21 @@ class Task(ft.Column):
         self.update()
 
     def save_clicked(self, e):
-        if self.edit_name_textfield.value: # Evita salvar nome vazio
+        if self.edit_name_textfield.value:  # Evita salvar nome vazio
             self.display_task_checkbox.label = self.edit_name_textfield.value
         self.display_view_row.visible = True
         self.edit_view_row.visible = False
         self.update()
 
-    def _handle_status_change(self, e): # Corrigido: satus_change -> _handle_status_change
+    def _handle_status_change(
+        self, e
+    ):  # Corrigido: satus_change -> _handle_status_change
         self.task_completed = self.display_task_checkbox.value
-        self.on_status_change_callback(self) # Chama o callback do TodoApp
+        self.on_status_change_callback(self)  # Chama o callback do TodoApp
         # self.update() # O Checkbox se atualiza; se houver outras mudanças visuais na Task, descomente
 
-    def _handle_delete(self, e): # Renomeado de delete_clicked para _handle_delete
-        self.on_delete_callback(self) # Chama o callback do TodoApp
+    def _handle_delete(self, e):  # Renomeado de delete_clicked para _handle_delete
+        self.on_delete_callback(self)  # Chama o callback do TodoApp
         # Não precisa de self.update() aqui, pois a Task será removida pelo TodoApp
 
 
@@ -92,8 +94,10 @@ class Task(ft.Column):
 class TodoApp(ft.Column):
     def __init__(self):
         super().__init__()
+        self.width = 500
+        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER  # Centraliza horizontalmente
         self._build_ui()
-        self.update_items_left() # Atualiza a contagem inicial
+        self.update_items_left()  # Atualiza a contagem inicial
 
     def _build_ui(self):
         self.new_task_textfield = ft.TextField(
@@ -102,7 +106,7 @@ class TodoApp(ft.Column):
             on_submit=self.add_task_handler,
         )
 
-        self.tasks_column = ft.Column( # Coluna dedicada para as tarefas
+        self.tasks_column = ft.Column(  # Coluna dedicada para as tarefas
             spacing=10,
             # scroll=ft.ScrollMode.ADAPTIVE # Descomente se esperar muitas tarefas
         )
@@ -140,7 +144,7 @@ class TodoApp(ft.Column):
                 ],
             ),
             self.filter_tabs,
-            self.tasks_column, # Adiciona a coluna de tarefas ao layout principal
+            self.tasks_column,  # Adiciona a coluna de tarefas ao layout principal
             ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -169,14 +173,14 @@ class TodoApp(ft.Column):
             self.tasks_column.controls.append(task)
             self.new_task_textfield.value = ""
             self.new_task_textfield.focus()
-            self.update_task_visibility() # Aplica o filtro atual à nova tarefa
+            self.update_task_visibility()  # Aplica o filtro atual à nova tarefa
             self.update_items_left()
             self.update()
 
     def clear_completed_tasks_handler(self, e):
-        for task in self.tasks_column.controls[:]: # Itera sobre uma cópia da lista
+        for task in self.tasks_column.controls[:]:  # Itera sobre uma cópia da lista
             if isinstance(task, Task) and task.task_completed:
-                self.task_delete_handler(task) # Reutiliza o handler de deleção
+                self.task_delete_handler(task)  # Reutiliza o handler de deleção
         # update_items_left e update são chamados por task_delete_handler
 
     def task_status_change_handler(self, task_instance: Task):
@@ -186,7 +190,7 @@ class TodoApp(ft.Column):
 
     def task_delete_handler(self, task_instance: Task):
         self.tasks_column.controls.remove(task_instance)
-        self.update_task_visibility() # Reaplicar filtros pode ser útil
+        self.update_task_visibility()  # Reaplicar filtros pode ser útil
         self.update_items_left()
         self.update()
 
@@ -203,9 +207,9 @@ class TodoApp(ft.Column):
         for task in self.tasks_column.controls:
             if isinstance(task, Task):
                 task.visible = (
-                    (current_tab_index == 0) or  # Todas
-                    (current_tab_index == 1 and not task.task_completed) or  # Ativas
-                    (current_tab_index == 2 and task.task_completed)  # Concluídas
+                    (current_tab_index == 0)  # Todas
+                    or (current_tab_index == 1 and not task.task_completed)  # Ativas
+                    or (current_tab_index == 2 and task.task_completed)  # Concluídas
                 )
         # self.update() # O chamador fará o update principal
 
@@ -215,9 +219,12 @@ def main(page: ft.Page):
     page.title = "Minhas Tarefas"
     page.window.width = 600
     page.window.height = 650
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER  # Centraliza horizontalmente
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER #
+    page.window.center()  # Centraliza a janela na tela
     page.padding = ft.padding.only(left=20, right=20, top=20, bottom=20)
     page.theme_mode = ft.ThemeMode.LIGHT
+    page.scroll = ft.ScrollMode.ADAPTIVE  # Permite rolagem adaptativa
 
     app = TodoApp()  # Cria uma instância do aplicativo de tarefas
 
