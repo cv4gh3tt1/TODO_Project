@@ -17,17 +17,20 @@ class Task(ft.Column):
     # Método para construir os controles da tarefa
     # Cria os elementos da interface, como checkbox, textfield e botões
     def _build_controls(self):
-
+        # Cria o checkbox para marcar a tarefa como concluída ou não
+        # O checkbox chama o método _handle_status_change quando seu valor muda
         self.display_task_checkbox = ft.Checkbox(
             value=self.task_completed,
             label=self.task_name_initial,
             on_change=self._handle_status_change,
         )
-
+        # Cria o textfield para editar o nome da tarefa
+        # O textfield chama o método save_clicked quando o usuário pressiona Enter
         self.edit_name_textfield = ft.TextField(
             expand=True, on_submit=self.save_clicked
         )
-
+        # Cria a linha de visualização da tarefa, que contém o checkbox e os botões de editar e deletar
+        # Esta linha é visível por padrão e contém o checkbox e os botões de ação
         self.display_view_row = ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -52,7 +55,8 @@ class Task(ft.Column):
                 ),
             ],
         )
-
+        # Cria a linha de edição da tarefa, que contém o textfield e o botão de salvar
+        # Esta linha começa invisível e só aparece quando o usuário clica para editar a tarefa
         self.edit_view_row = ft.Row(
             visible=False,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -67,7 +71,7 @@ class Task(ft.Column):
                 ),
             ],
         )
-
+        #  Adiciona as linhas de visualização e edição à coluna da tarefa
         self.controls = [self.display_view_row, self.edit_view_row]
 
     # Metodo para editar a tarefa
@@ -120,9 +124,15 @@ class TodoApp(ft.Column):
     # Método para construir a interface do usuário
     # Cria os elementos principais, como textfield, coluna de tarefas e botões
     def _build_ui(self):
+
+        # Cria o campo de texto para adicionar novas tarefas
+        # Este campo de texto permite ao usuário digitar o nome da nova tarefa
         self.new_task_textfield = ft.TextField(
             hint_text="Digite uma nova tarefa",
             expand=True,
+            border_color="BLUE_400",
+            filled=True,
+            fill_color="BLUE_50",
             on_submit=self.add_task_handler,
         )
 
@@ -180,9 +190,15 @@ class TodoApp(ft.Column):
             # O botão de adicionar tarefa é um botão flutuante que aparece ao lado do campo de texto
             ft.Row(
                 controls=[
+                    # Campo de texto para nova tarefa
                     self.new_task_textfield,
+                    # Botão flutuante para adicionar tarefa
                     ft.FloatingActionButton(
-                        icon=ft.Icons.ADD, on_click=self.add_task_handler
+                        icon=ft.Icons.ADD,
+                        tooltip="Adicionar tarefa",
+                        height=50,
+                        width=50,
+                        on_click=self.add_task_handler,
                     ),
                 ],
             ),
@@ -309,6 +325,7 @@ def main(page: ft.Page):
         True  # Permite que o aplicativo expanda para preencher o espaço disponível
     )
     page.add(app)  # Adiciona o aplicativo à página
+
 
 # Executa o aplicativo com o método main
 # Se o arquivo for executado diretamente, inicia o aplicativo
